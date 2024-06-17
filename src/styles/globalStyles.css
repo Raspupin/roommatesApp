@@ -26,6 +26,12 @@ body {
   
     .MuiButton-root {
       font-size: 0.875rem;
+      
     }
   }
+
+  /* .menuButton{
+    border:#dbdbdba8 2px solid 
+    !important;
+  } */
   
