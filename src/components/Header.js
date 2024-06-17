@@ -11,7 +11,7 @@ function Header() {
   const theme = useTheme();
 
   return (
-    <AppBar position="sticky" sx={{ zIndex: 2000 }}>
+    <AppBar position="static">
       <Toolbar>
         <IconButton edge="start" color="inherit" aria-label="menu" sx={{border:'rgba(192, 192, 192, 0.854) 2px solid','&:hover':{backgroundColor:'#66cef773'}}}>
           <AccountBoxIcon/>
