@@ -1,19 +1,20 @@
 import React from 'react';
-import { Container, Typography } from '@mui/material';
-import './styles/App.css';
-import Header from './components/Header.js';
+import { Container } from '@mui/material';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import './styles/globalStyles.css';
 
 function App() {
   return (
-    <><Header />
-    <Container>
-      <Typography variant="h1">Roommates Management App</Typography>
-      <Typography variant="body1">
-        Welcome to your roommates management app. Here you can manage all tasks and activities.
-      </Typography>
-    </Container></>
+    <>
+      <Header />
+      <Container style={{ minHeight: 'calc(100vh - 64px - 64px)', padding: '2rem' }}>
+        <Home />
+      </Container>
+      <Footer />
+    </>
   );
 }
-
 
 export default App;
