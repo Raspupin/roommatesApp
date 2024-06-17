@@ -1,9 +1,10 @@
 import React from 'react';
 import { Container, Typography, Button } from '@mui/material';
+import '../styles/home.css';
 
 function Home() {
   return (
-    <Container>
+    <Container class="content" sx={{ zIndex: 1000 }}>
       <Typography variant="h2" component="h1" gutterBottom>
         Welcome to Roommates Management App
       </Typography>
