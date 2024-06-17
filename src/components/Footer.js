@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, useTheme } from '@mui/material';
+import { Container, Typography, useTheme ,TextField, Button} from '@mui/material';
 
 function Footer() {
   const theme = useTheme();
@@ -10,8 +10,10 @@ function Footer() {
         <Typography variant="body1">
           &copy; 2024 Room8es Management App. All rights reserved.
         </Typography>
+        <TextField id="outlined-basic" label="Subscribe now" variant="outlined" />
       </Container>
     </footer>
+    
   );
 }
 
