@@ -10,7 +10,7 @@ function Footer() {
         <Typography variant="body1">
           &copy; 2024 Room8es Management App. All rights reserved.
         </Typography>
-        <TextField id="outlined-basic" label="Subscribe now" variant="outlined" />
+        {/* <TextField id="outlined-basic" label="Subscribe now" variant="outlined" /> */}
       </Container>
     </footer>
     
