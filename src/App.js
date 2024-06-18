@@ -10,8 +10,8 @@ function App() {
   return (
     <>
       <Header />
-      <Container style={{ minHeight: 'calc(100vh - 64px - 64px)', padding: '2rem' }}>
-        <Home/>
+      <Container sx={{position:'relative', zIndex:'1'}} style={{ minHeight: 'calc(100vh - 64px - 64px)', padding: '2rem' }}>
+        <Login/>
       </Container>
       <Footer />
     </>
