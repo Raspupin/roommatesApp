@@ -4,7 +4,7 @@ import '../styles/home.css';
 
 function Home() {
   return (
-    <Container sx={{position:'relative',zIndex:'-1'}} className="content" >
+    <Container sx={{position:'relative',zIndex:'1000'}} className="content" >
       <Typography variant="h2" component="h1" gutterBottom>
         Welcome to Roommates Management App
       </Typography>
