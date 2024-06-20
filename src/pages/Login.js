@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, Grid,Avatar } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import room8esLogoNew from './room8esLogoNew.png';
 const Login = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -17,7 +18,7 @@ const Login = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container  maxWidth="sm">
       <Box
         sx={{
           display: 'flex',
@@ -28,16 +29,18 @@ const Login = () => {
           backgroundColor: theme.palette.background.paper,
           borderRadius: 2,
           boxShadow: theme.shadows[3],
+          borderTop: '#78d0ff 40px solid'
         }}
       >
         <Box
           component="img"
-          src=".\test1.png"
+          src={room8esLogoNew}
           alt="Room8es Logo"
           sx={{
             width: isMobile ? '80%' : '40%', // Adjust the width as needed
             height: 'auto', // Maintain aspect ratio
             mb: 2,
+            borderRadius: '20%'
           }}
         />
         <Typography variant="h4" component="h1" gutterBottom>

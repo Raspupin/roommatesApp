@@ -7,6 +7,7 @@ import './styles/globalStyles.css';
 import NotesPage from './pages/NotesPage';
 import MyHome from './pages/MyHome.js';
 import TasksPage from './pages/TasksPage.js';
+import Login from './pages/Login.js';
 //router
 import {Route, createBrowserRouter, createRoutesFromElements, RouterProvider} from 'react-router-dom'
 
@@ -24,7 +25,8 @@ const myRouter = createBrowserRouter(
       <Route path='notes' element={<NotesPage/>} />
       <Route path='myHome' element={<MyHome/>} /> 
       <Route path='events' element={<EventsPage/>} /> 
-      <Route path='myTasks' element={<TasksPage/>} /> 
+      <Route path='myTasks' element={<TasksPage/>} />
+      <Route path='login' element={<Login/>}/>
     </Route>
   )
 )
