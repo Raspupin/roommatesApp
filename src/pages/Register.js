@@ -1,30 +1,23 @@
 import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Container,
-  Typography,
-  Box,
-  Grid,
-  Avatar,
-} from "@mui/material";
+import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import room8esLogoNew from "./room8esLogoNew.png";
-import { NavLink } from "react-router-dom";
 import CompanyLogo from "../components/CompanyLogo";
-const Login = () => {
+
+const Register = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Handle login logic here
+    // Handle registration logic here
     console.log("Email:", email);
     console.log("Password:", password);
+    console.log("Confirm Password:", confirmPassword);
   };
 
   return (
@@ -39,13 +32,13 @@ const Login = () => {
           backgroundColor: theme.palette.background.paper,
           borderRadius: 2,
           boxShadow: theme.shadows[3],
-          borderTop: "#78d0ff 40px solid",
         }}
       >
         <CompanyLogo />
         <Typography variant="h3" component="h1" gutterBottom>
-          Login
+          Register
         </Typography>
+
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -71,9 +64,21 @@ const Login = () => {
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            id="confirmPassword"
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <Button
             type="submit"
@@ -81,20 +86,12 @@ const Login = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign In
+            Register
           </Button>
-          <Typography
-            variant="body2"
-            sx={{ mt: 2, color: "blue" }}
-            component={NavLink}
-            to="/register"
-          >
-            Dont have a Account? Register here
-          </Typography>
         </Box>
       </Box>
     </Container>
   );
 };
 
-export default Login;
+export default Register;
