@@ -5,26 +5,46 @@ import {
   Container,
   Typography,
   Box,
-  Grid,
   Avatar,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import room8esLogoNew from "./room8esLogoNew.png";
-import { NavLink } from "react-router-dom";
+import axios from "axios"; // Import axios for making API calls
+import { NavLink, useNavigate } from "react-router-dom";
 import CompanyLogo from "../components/CompanyLogo";
+
 const Login = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate(); // React Router hook for redirecting
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // State to handle error messages
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle login logic here
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/login",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true, // Allow cookies to be sent
+        }
+      );
+
+      // If login is successful
+      console.log("Login successful:", response.data);
+      // Redirect the user to the home page or any other page
+      navigate("/myHome"); // Change this route based on where you want to go after login
+    } catch (error) {
+      console.error("Error during login:", error);
+      setError("Invalid email or password");
+    }
   };
 
   return (
@@ -75,6 +95,14 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          {/* Display error message if login fails */}
+          {error && (
+            <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+              {error}
+            </Typography>
+          )}
+
           <Button
             type="submit"
             fullWidth
@@ -89,7 +117,7 @@ const Login = () => {
             component={NavLink}
             to="/register"
           >
-            Dont have a Account? Register here
+            Don't have an account? Register here
           </Typography>
         </Box>
       </Box>

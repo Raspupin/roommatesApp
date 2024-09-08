@@ -2,13 +2,15 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
-
-// Create an Express app
-const app = express();
+const jwt = require("jsonwebtoken"); // Import JWT package
+// Secret key for signing JWTs (should be kept private and secure)
+const jwtSecret = "your_jwt_secret_key";
+//const bcrypt = require("bcrypt"); // Assuming passwords are hashed using bcrypt (recommended) FOR LATER US!!
 
 // Middleware to handle JSON requests
+const app = express();
 app.use(express.json());
-app.use(cors()); // Enable CORS to allow requests from the React frontend
+app.use(cors({ origin: true, credentials: true })); // Enable CORS with credentials
 
 // MySQL database connection configuration
 const db = mysql.createConnection({
@@ -43,6 +45,66 @@ app.get("/api/notes", (req, res) => {
       res.json(result); // Send the fetched data as a JSON response
     }
   });
+});
+
+// API route for user login
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  // Query to find the user by email
+  const sqlQuery = "SELECT * FROM user WHERE email = ?";
+  db.query(sqlQuery, [email], (err, result) => {
+    if (err) {
+      console.error("Error fetching user:", err);
+      res.status(500).json({ error: "Server error" });
+      return;
+    }
+
+    if (result.length === 0) {
+      // User not found
+      res.status(401).json({ message: "Invalid email or password" });
+      return;
+    }
+
+    const user = result[0];
+
+    // Verify password (you'll use bcrypt later for hashing)
+    if (password === user.password) {
+      // If password is correct, generate JWT token
+      const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
+        expiresIn: "1h", // Token expires in 1 hour
+      });
+
+      // Send token in a cookie (HttpOnly for security)
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true, // Set to true if using HTTPS
+        sameSite: "Strict",
+      });
+
+      return res.status(200).json({ message: "Login successful" });
+    } else {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+  });
+});
+
+// Middleware to authenticate using JWT from cookies
+const authenticateToken = (req, res, next) => {
+  const token = req.cookies.token; // Get token from cookies
+
+  if (!token) return res.sendStatus(401); // Unauthorized if no token
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) return res.sendStatus(403); // Forbidden if token is invalid
+    req.user = user; // Attach user info to request
+    next();
+  });
+};
+
+// Example protected route
+app.get("/api/protected", authenticateToken, (req, res) => {
+  res.json({ message: "This is a protected route", user: req.user });
 });
 
 // Start the server
