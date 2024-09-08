@@ -32,12 +32,12 @@ app.get("/", (req, res) => {
   res.send("Hello, the backend is connected to MySQL!");
 });
 
-// API route to fetch note from the database
+// Example API route to get data from 'note' table
 app.get("/api/notes", (req, res) => {
-  const sqlQuery = "SELECT * FROM note"; // Assuming 'notes' is your table name
+  const sqlQuery = "SELECT * FROM note"; // Correct table name 'note'
   db.query(sqlQuery, (err, result) => {
     if (err) {
-      console.error("Error fetching note:", err);
+      console.error("Error fetching notes:", err);
       res.status(500).send("Server error");
     } else {
       res.json(result); // Send the fetched data as a JSON response
