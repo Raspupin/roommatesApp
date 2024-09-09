@@ -71,9 +71,13 @@ app.post("/api/login", (req, res) => {
     // Verify password (you'll use bcrypt later for hashing)
     if (password === user.password) {
       // If password is correct, generate JWT token
-      const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
-        expiresIn: "1h", // Token expires in 1 hour
-      });
+      const token = jwt.sign(
+        { id: user.id, email: user.email, firstName: user.firstName },
+        jwtSecret,
+        {
+          expiresIn: "1h", // Token expires in 1 hour
+        }
+      );
 
       // Send token in a cookie (HttpOnly for security)
       res.cookie("token", token, {
@@ -101,6 +105,14 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+//API request to retrive users first name
+app.get("/api/user", authenticateToken, (req, res) => {
+  // Now the JWT contains `firstName`, so retrieve it from req.user
+  const { firstName } = req.user;
+
+  // Respond with the user's firstName
+  res.json({ loggedIn: true, user: { firstName } });
+});
 
 // Example protected route
 app.get("/api/protected", authenticateToken, (req, res) => {
