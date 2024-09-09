@@ -3,6 +3,7 @@ const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
 const jwt = require("jsonwebtoken"); // Import JWT package
+const cookieParser = require("cookie-parser");
 // Secret key for signing JWTs (should be kept private and secure)
 const jwtSecret = "your_jwt_secret_key";
 //const bcrypt = require("bcrypt"); // Assuming passwords are hashed using bcrypt (recommended) FOR LATER US!!
@@ -10,6 +11,7 @@ const jwtSecret = "your_jwt_secret_key";
 // Middleware to handle JSON requests
 const app = express();
 app.use(express.json());
+app.use(cookieParser()); // Add this middleware to parse cookies
 app.use(cors({ origin: true, credentials: true })); // Enable CORS with credentials
 
 // MySQL database connection configuration
@@ -71,9 +73,13 @@ app.post("/api/login", (req, res) => {
     // Verify password (you'll use bcrypt later for hashing)
     if (password === user.password) {
       // If password is correct, generate JWT token
-      const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
-        expiresIn: "1h", // Token expires in 1 hour
-      });
+      const token = jwt.sign(
+        { id: user.id, email: user.email, firstName: user.fName },
+        jwtSecret,
+        {
+          expiresIn: "1h", // Token expires in 1 hour
+        }
+      );
 
       // Send token in a cookie (HttpOnly for security)
       res.cookie("token", token, {
@@ -101,6 +107,14 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+//API request to retrive users first name
+app.get("/api/user", authenticateToken, (req, res) => {
+  // Now the JWT contains `firstName`, so retrieve it from req.user
+  const { firstName } = req.user;
+
+  // Respond with the user's firstName
+  res.json({ loggedIn: true, user: { firstName } });
+});
 
 // Example protected route
 app.get("/api/protected", authenticateToken, (req, res) => {

@@ -9,6 +9,7 @@ import MyHome from "./pages/MyHome.js";
 import TasksPage from "./pages/TasksPage.js";
 import Login from "./pages/Login.js";
 import Register from "./pages/Register.js";
+import { UserProvider } from "./components/UserContext.js";
 //router
 import {
   Route,
@@ -38,12 +39,14 @@ const myRouter = createBrowserRouter(
 function App() {
   return (
     <>
-      <RouterProvider router={myRouter} />
-      <Container
-        sx={{ position: "relative", zIndex: "1" }}
-        style={{ minHeight: "calc(100vh - 64px - 64px)", padding: "2rem" }}
-      ></Container>
-      <Footer />
+      <UserProvider>
+        <RouterProvider router={myRouter} />
+        <Container
+          sx={{ position: "relative", zIndex: "1" }}
+          style={{ minHeight: "calc(100vh - 64px - 64px)", padding: "2rem" }}
+        ></Container>
+        <Footer />
+      </UserProvider>
     </>
   );
 }

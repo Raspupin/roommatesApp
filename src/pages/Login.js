@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   TextField,
   Button,
@@ -12,12 +12,14 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios"; // Import axios for making API calls
 import { NavLink, useNavigate } from "react-router-dom";
 import CompanyLogo from "../components/CompanyLogo";
+import { UserContext } from "../components/UserContext";
 
 const Login = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate(); // React Router hook for redirecting
 
+  const { setUser } = useContext(UserContext); // Access setUser from context
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // State to handle error messages
@@ -32,17 +34,23 @@ const Login = () => {
           email,
           password,
         },
-        {
-          withCredentials: true, // Allow cookies to be sent
-        }
+        { withCredentials: true }
       );
 
-      // If login is successful
-      console.log("Login successful:", response.data);
-      // Redirect the user to the home page or any other page
-      navigate("/myHome"); // Change this route based on where you want to go after login
-    } catch (error) {
-      console.error("Error during login:", error);
+      if (response.status === 200) {
+        // After successful login, get the user details and update the context
+        const userResponse = await axios.get("http://localhost:5000/api/user", {
+          withCredentials: true,
+        });
+
+        if (userResponse.data.loggedIn) {
+          setUser(userResponse.data.user); // Update the UserContext with the new user
+        }
+
+        // Redirect to the home page or another route after successful login
+        navigate("/myHome");
+      }
+    } catch (err) {
       setError("Invalid email or password");
     }
   };
