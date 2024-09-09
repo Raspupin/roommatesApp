@@ -17,20 +17,6 @@ import EventIcon from "@mui/icons-material/Event";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import EmailIcon from "@mui/icons-material/Email";
 import HomeIcon from "@mui/icons-material/Home";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  useTheme,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import EventIcon from "@mui/icons-material/Event";
-import AddTaskIcon from "@mui/icons-material/AddTask";
-import EmailIcon from "@mui/icons-material/Email";
-import HomeIcon from "@mui/icons-material/Home";
 
 export default function BarLayout() {
   const theme = useTheme();
@@ -59,18 +45,6 @@ export default function BarLayout() {
     <div>
       <AppBar sx={{ zIndex: "1300" }} position="sticky">
         <Toolbar>
-          <IconButton
-            LinkComponent={NavLink}
-            to="login"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{
-              border: "rgba(192, 192, 192, 0.854) 2px solid",
-              "&:hover": { backgroundColor: "#66cef773" },
-            }}
-          >
-            <AccountBoxIcon />
           <IconButton
             LinkComponent={NavLink}
             to="login"
@@ -146,11 +120,8 @@ export default function BarLayout() {
         </Toolbar>
       </AppBar>
       <main>
-      <main>
         <Outlet />
       </main>
-      </main>
     </div>
-  );
   );
 }
