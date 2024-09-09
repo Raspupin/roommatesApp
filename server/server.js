@@ -115,6 +115,14 @@ app.get("/api/user", authenticateToken, (req, res) => {
   // Respond with the user's firstName
   res.json({ loggedIn: true, user: { firstName } });
 });
+//API request to retrive users first name
+app.get("/api/user", authenticateToken, (req, res) => {
+  // Now the JWT contains `firstName`, so retrieve it from req.user
+  const { firstName } = req.user;
+
+  // Respond with the user's firstName
+  res.json({ loggedIn: true, user: { firstName } });
+});
 
 // Example protected route
 app.get("/api/protected", authenticateToken, (req, res) => {
