@@ -2,22 +2,50 @@ import React, { useState } from "react";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import CompanyLogo from "../components/CompanyLogo";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
+  // State for user fields
+  const [fName, setFirstName] = useState("");
+  const [lName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [dateJoined, setDateOfJoin] = useState("");
 
-  const handleSubmit = (event) => {
+  const [error, setError] = useState(""); // State for error messages
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle registration logic here
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      // Send registration data to the backend
+      const response = await axios.post("http://localhost:5000/api/register", {
+        fName,
+        lName,
+        email,
+        password,
+        dateJoined,
+      });
+
+      if (response.status === 201) {
+        // After successful registration, pass the email to the choose-apartment page
+        navigate("/chooseApartment", { state: { email } }); // Pass email to the next page
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      setError("Failed to register. Please try again.");
+    }
   };
 
   return (
@@ -34,11 +62,9 @@ const Register = () => {
           boxShadow: theme.shadows[3],
         }}
       >
-        <CompanyLogo />
         <Typography variant="h3" component="h1" gutterBottom>
           Register
         </Typography>
-
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -48,11 +74,23 @@ const Register = () => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
+            label="First Name"
+            value={fName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Last Name"
+            value={lName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -60,11 +98,8 @@ const Register = () => {
             margin="normal"
             required
             fullWidth
-            name="password"
             label="Password"
             type="password"
-            id="password"
-            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -72,14 +107,24 @@ const Register = () => {
             margin="normal"
             required
             fullWidth
-            name="confirmPassword"
             label="Confirm Password"
             type="password"
-            id="confirmPassword"
-            autoComplete="new-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Date of Joining Apartment"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={dateJoined}
+            onChange={(e) => setDateOfJoin(e.target.value)}
+          />
+
+          {error && <Typography color="error">{error}</Typography>}
+
           <Button
             type="submit"
             fullWidth

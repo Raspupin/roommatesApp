@@ -9,6 +9,7 @@ import MyHome from "./pages/MyHome.js";
 import TasksPage from "./pages/TasksPage.js";
 import Login from "./pages/Login.js";
 import Register from "./pages/Register.js";
+import ChooseApartment from "./pages/ChooseApartment.js";
 import { UserProvider } from "./components/UserContext.js";
 //router
 import {
@@ -32,6 +33,7 @@ const myRouter = createBrowserRouter(
       <Route path="myTasks" element={<TasksPage />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
+      <Route path="chooseApartment" element={<ChooseApartment />} />
     </Route>
   )
 );

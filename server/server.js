@@ -122,6 +122,90 @@ app.post("/api/logout", (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
+// API route for user registration
+app.post("/api/register", (req, res) => {
+  const { fName, lName, email, password, dateJoined } = req.body;
+
+  // Check if email already exists
+  const sqlCheckUser = "SELECT * FROM user WHERE email = ?";
+  db.query(sqlCheckUser, [email], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    if (result.length > 0) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Insert new user into the database without password hashing (as plain text for now)
+    const sqlInsertUser = `
+  INSERT INTO user (fName, lName, email, password, dateJoined, apartmentId) 
+  VALUES (?, ?, ?, ?, ?, NULL)
+`;
+
+    db.query(
+      sqlInsertUser,
+      [fName, lName, email, password, dateJoined],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({ message: "Error registering user" });
+        }
+
+        res.status(201).json({ message: "User registered successfully" });
+      }
+    );
+  });
+});
+
+// API route to join an existing apartment
+app.post("/api/join-apartment", (req, res) => {
+  const { apartmentId, email } = req.body; // Receive email from frontend
+
+  // Update the user's apartmentId based on their email
+  const sqlUpdateUser = "UPDATE user SET apartmentId = ? WHERE email = ?";
+  db.query(sqlUpdateUser, [apartmentId, email], (err, result) => {
+    if (err) {
+      console.error("Error updating user's apartment:", err);
+      return res.status(500).json({ message: "Error joining apartment" });
+    }
+    res.status(200).json({ message: "Joined apartment successfully" });
+  });
+});
+
+// API route to create a new apartment
+app.post("/api/create-apartment", (req, res) => {
+  const { apartmentName, address, email } = req.body; // Receive email and apartment details from frontend
+
+  // Insert the new apartment into the apartment table
+  const sqlInsertApartment =
+    "INSERT INTO apartment (apartmentName, address) VALUES (?, ?)";
+
+  db.query(sqlInsertApartment, [apartmentName, address], (err, result) => {
+    if (err) {
+      console.error("Error creating apartment:", err);
+      return res.status(500).json({ message: "Error creating apartment" });
+    }
+
+    // Get the newly created apartmentId from the result.insertId
+    const newApartmentId = result.insertId;
+
+    // Now update the user's apartmentId in the user table using the email
+    const sqlUpdateUser = "UPDATE user SET apartmentId = ? WHERE email = ?";
+    db.query(sqlUpdateUser, [newApartmentId, email], (err, result) => {
+      if (err) {
+        console.error("Error updating user's apartmentId:", err);
+        return res
+          .status(500)
+          .json({ message: "Error updating user's apartmentId" });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Apartment created and user updated successfully" });
+    });
+  });
+});
+
 // Start the server
 const PORT = 5000;
 app.listen(PORT, () => {
