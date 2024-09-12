@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../components/UserContext";
 //Mui
@@ -21,6 +21,7 @@ import HomeIcon from "@mui/icons-material/Home";
 export default function BarLayout() {
   const theme = useTheme();
   const { user, setUser } = useContext(UserContext); // Access user and setUser from context
+  const navigate = useNavigate(); // For redirecting the user
 
   // Fetch the user data when the component mounts
   useEffect(() => {
@@ -40,7 +41,20 @@ export default function BarLayout() {
     };
 
     fetchUser();
-  }, []); // Empty dependency array ensures this runs once on component mount
+  }, [setUser]); // Empty dependency array ensures this runs once on component mount
+  const handleSignOut = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/logout",
+        {},
+        { withCredentials: true }
+      );
+      setUser(null); // Reset the user state to null
+      navigate("/login"); // Redirect to login or home page
+    } catch (error) {
+      console.error("Error during sign-out:", error);
+    }
+  };
   return (
     <div>
       <AppBar sx={{ zIndex: "1300" }} position="sticky">
@@ -117,6 +131,20 @@ export default function BarLayout() {
             <HomeIcon sx={{ mr: 0.5 }} />
             My Home
           </Button>
+          {user && (
+            <Button
+              onClick={handleSignOut} // Trigger sign out when clicked
+              sx={{
+                m: 0.5,
+                borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
+                "&:hover": { backgroundColor: "#66cef773" },
+                color: "red",
+              }}
+              color="inherit"
+            >
+              Sign Out
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <main>
