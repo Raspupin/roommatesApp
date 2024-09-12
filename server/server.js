@@ -110,6 +110,18 @@ app.get("/api/protected", authenticateToken, (req, res) => {
   res.json({ message: "This is a protected route", user: req.user });
 });
 
+// API route for sign-out
+app.post("/api/logout", (req, res) => {
+  // Clear the JWT token cookie
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false, // Set to true if using HTTPS in production
+    sameSite: "Strict",
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
 // Start the server
 const PORT = 5000;
 app.listen(PORT, () => {
