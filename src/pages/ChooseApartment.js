@@ -9,10 +9,15 @@ import {
   RadioGroup,
   FormControlLabel,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom"; // Use useLocation to access passed data
+import CompanyLogo from "../components/CompanyLogo";
 
 const ChooseApartment = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const location = useLocation(); // Get the location object
   const { email } = location.state || {}; // Extract the email from the passed state
@@ -77,12 +82,14 @@ const ChooseApartment = () => {
           flexDirection: "column",
           alignItems: "center",
           mt: 8,
-          padding: 3,
-          backgroundColor: "white",
+          padding: isMobile ? 2 : 3,
+          backgroundColor: theme.palette.background.paper,
           borderRadius: 2,
-          boxShadow: 3,
+          boxShadow: theme.shadows[3],
+          borderTop: "#78d0ff 40px solid",
         }}
       >
+        <CompanyLogo />
         <Typography variant="h4" component="h1" gutterBottom>
           Join or Create an Apartment
         </Typography>

@@ -4,6 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import CompanyLogo from "../components/CompanyLogo";
 
 const Register = () => {
   const theme = useTheme();
@@ -60,8 +61,10 @@ const Register = () => {
           backgroundColor: theme.palette.background.paper,
           borderRadius: 2,
           boxShadow: theme.shadows[3],
+          borderTop: "#78d0ff 40px solid",
         }}
       >
+        <CompanyLogo />
         <Typography variant="h3" component="h1" gutterBottom>
           Register
         </Typography>
