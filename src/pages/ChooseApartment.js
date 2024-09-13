@@ -22,6 +22,7 @@ const ChooseApartment = () => {
   const [apartmentId, setApartmentId] = useState(""); // For joining
   const [apartmentName, setApartmentName] = useState(""); // For creating
   const [address, setAddress] = useState(""); // For creating
+  const [city, setCity] = useState(""); // For creating
   const [error, setError] = useState("");
 
   // Ensure email is available
@@ -45,7 +46,7 @@ const ChooseApartment = () => {
           { apartmentId, email }
         );
         if (response.status === 200) {
-          navigate("/myHome");
+          navigate("/login");
         }
       } else {
         // API call to create a new apartment
@@ -55,10 +56,11 @@ const ChooseApartment = () => {
             apartmentName,
             address,
             email,
+            city,
           }
         );
         if (response.status === 200) {
-          navigate("/myHome");
+          navigate("/login");
         }
       }
     } catch (error) {
@@ -133,6 +135,14 @@ const ChooseApartment = () => {
                 label="Address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="City"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
               />
             </>
           )}

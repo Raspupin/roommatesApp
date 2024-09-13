@@ -63,24 +63,52 @@ app.post("/api/login", (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const user = result[0];
+    const user = result[0]; // Get user details, including apartmentId
 
     // Verify password
     if (password === user.password) {
-      // Generate the JWT token, and map user.fName to firstName in the token payload
-      const token = jwt.sign(
-        { id: user.id, email: user.email, firstName: user.fName }, // Map fName to firstName
-        jwtSecret,
-        { expiresIn: "1h" }
+      // Fetch the apartmentName using the user's apartmentId
+      const sqlApartmentQuery =
+        "SELECT apartmentName FROM apartment WHERE apartmentId = ?";
+      db.query(
+        sqlApartmentQuery,
+        [user.apartmentId],
+        (err, apartmentResult) => {
+          if (err) {
+            console.error("Error fetching apartment name:", err);
+            return res
+              .status(500)
+              .json({ error: "Database error while fetching apartment" });
+          }
+
+          const apartmentName =
+            apartmentResult.length > 0
+              ? apartmentResult[0].apartmentName
+              : null;
+
+          // Generate the JWT token, including apartmentName in the token payload
+          const token = jwt.sign(
+            {
+              id: user.id,
+              email: user.email,
+              firstName: user.fName,
+              apartmentId: user.apartmentId,
+              apartmentName: apartmentName, // Add apartmentName to token
+            },
+            jwtSecret,
+            { expiresIn: "1h" }
+          );
+          console.log("User Info:", token); // Check if apartmentName is included
+          // Send the token as a cookie
+          res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, // Set to true for HTTPS in production
+            sameSite: "Strict",
+          });
+
+          return res.status(200).json({ message: "Login successful" });
+        }
       );
-
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false, // Set to true for HTTPS in production
-        sameSite: "Strict",
-      });
-
-      return res.status(200).json({ message: "Login successful" });
     } else {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -99,10 +127,30 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// API request to retrieve user's first name
+// API request to retrieve user's first name, apartmentId, and apartmentName
 app.get("/api/user", authenticateToken, (req, res) => {
-  const { firstName } = req.user; // Retrieve firstName from JWT payload
-  res.json({ loggedIn: true, user: { firstName } });
+  const { firstName, apartmentId } = req.user; // Retrieve firstName and apartmentId from JWT payload
+
+  // Fetch the apartmentName using apartmentId from the 'apartment' table
+  const sqlApartmentQuery =
+    "SELECT apartmentName FROM apartment WHERE apartmentId = ?";
+  db.query(sqlApartmentQuery, [apartmentId], (err, apartmentResult) => {
+    if (err) {
+      console.error("Error fetching apartment name:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error while fetching apartment" });
+    }
+
+    const apartmentName =
+      apartmentResult.length > 0 ? apartmentResult[0].apartmentName : null;
+
+    // Respond with the user's firstName, apartmentId, and apartmentName
+    res.json({
+      loggedIn: true,
+      user: { firstName, apartmentId, apartmentName },
+    });
+  });
 });
 
 // Example protected route
@@ -174,36 +222,40 @@ app.post("/api/join-apartment", (req, res) => {
 
 // API route to create a new apartment
 app.post("/api/create-apartment", (req, res) => {
-  const { apartmentName, address, email } = req.body; // Receive email and apartment details from frontend
+  const { apartmentName, address, email, city } = req.body; // Receive email and apartment details from frontend
 
   // Insert the new apartment into the apartment table
   const sqlInsertApartment =
-    "INSERT INTO apartment (apartmentName, address) VALUES (?, ?)";
+    "INSERT INTO apartment (apartmentName, address, city) VALUES (?, ?, ?)";
 
-  db.query(sqlInsertApartment, [apartmentName, address], (err, result) => {
-    if (err) {
-      console.error("Error creating apartment:", err);
-      return res.status(500).json({ message: "Error creating apartment" });
-    }
-
-    // Get the newly created apartmentId from the result.insertId
-    const newApartmentId = result.insertId;
-
-    // Now update the user's apartmentId in the user table using the email
-    const sqlUpdateUser = "UPDATE user SET apartmentId = ? WHERE email = ?";
-    db.query(sqlUpdateUser, [newApartmentId, email], (err, result) => {
+  db.query(
+    sqlInsertApartment,
+    [apartmentName, address, city],
+    (err, result) => {
       if (err) {
-        console.error("Error updating user's apartmentId:", err);
-        return res
-          .status(500)
-          .json({ message: "Error updating user's apartmentId" });
+        console.error("Error creating apartment:", err);
+        return res.status(500).json({ message: "Error creating apartment" });
       }
 
-      res
-        .status(200)
-        .json({ message: "Apartment created and user updated successfully" });
-    });
-  });
+      // Get the newly created apartmentId from the result.insertId
+      const newApartmentId = result.insertId;
+
+      // Now update the user's apartmentId in the user table using the email
+      const sqlUpdateUser = "UPDATE user SET apartmentId = ? WHERE email = ?";
+      db.query(sqlUpdateUser, [newApartmentId, email], (err, result) => {
+        if (err) {
+          console.error("Error updating user's apartmentId:", err);
+          return res
+            .status(500)
+            .json({ message: "Error updating user's apartmentId" });
+        }
+
+        res
+          .status(200)
+          .json({ message: "Apartment created and user updated successfully" });
+      });
+    }
+  );
 });
 
 // Start the server

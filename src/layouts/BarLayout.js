@@ -9,9 +9,8 @@ import {
   Typography,
   Button,
   IconButton,
-  useTheme,
+  Box,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import EventIcon from "@mui/icons-material/Event";
 import AddTaskIcon from "@mui/icons-material/AddTask";
@@ -19,7 +18,6 @@ import EmailIcon from "@mui/icons-material/Email";
 import HomeIcon from "@mui/icons-material/Home";
 
 export default function BarLayout() {
-  const theme = useTheme();
   const { user, setUser } = useContext(UserContext); // Access user and setUser from context
   const navigate = useNavigate(); // For redirecting the user
 
@@ -59,92 +57,108 @@ export default function BarLayout() {
     <div>
       <AppBar sx={{ zIndex: "1300" }} position="sticky">
         <Toolbar>
-          <IconButton
-            LinkComponent={NavLink}
-            to="login"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{
-              border: "rgba(192, 192, 192, 0.854) 2px solid",
-              "&:hover": { backgroundColor: "#66cef773" },
-            }}
-          >
-            <AccountBoxIcon />
-          </IconButton>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
-            {user ? `Welcome, ${user.firstName}` : "Welcome, Guest"}
-          </Typography>
-          <Button
-            LinkComponent={NavLink}
-            to="notes"
-            sx={{
-              "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
-              m: 0.5,
-              borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
-              "&:hover": { backgroundColor: "#66cef773" },
-            }}
-            color="inherit"
-          >
-            <EmailIcon sx={{ mr: 0.5 }} />
-            Notes
-          </Button>
-          <Button
-            LinkComponent={NavLink}
-            to="myTasks"
-            sx={{
-              "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
-              m: 0.5,
-              borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
-              "&:hover": { backgroundColor: "#66cef773" },
-            }}
-            color="inherit"
-          >
-            <AddTaskIcon sx={{ mr: 0.5 }} />
-            Tasks
-          </Button>
-          <Button
-            LinkComponent={NavLink}
-            to="events"
-            sx={{
-              "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
-              m: 0.5,
-              borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
-              "&:hover": { backgroundColor: "#66cef773" },
-            }}
-            color="inherit"
-          >
-            <EventIcon sx={{ mr: 0.5 }} />
-            Events
-          </Button>
-          <Button
-            LinkComponent={NavLink}
-            to="myHome"
-            sx={{
-              "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
-              m: 0.5,
-              borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
-              "&:hover": { backgroundColor: "#66cef773" },
-            }}
-            color="inherit"
-          >
-            <HomeIcon sx={{ mr: 0.5 }} />
-            My Home
-          </Button>
-          {user && (
-            <Button
-              onClick={handleSignOut} // Trigger sign out when clicked
+          {/* Left side - Welcome message and apartment name */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              LinkComponent={NavLink}
+              to="login"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
               sx={{
+                border: "rgba(192, 192, 192, 0.854) 2px solid",
+                "&:hover": { backgroundColor: "#66cef773" },
+              }}
+            >
+              <AccountBoxIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ mx: 2 }}>
+              {user ? `Welcome, ${user.firstName}` : "Welcome, Guest"}
+            </Typography>
+          </Box>
+
+          {/* Center - Navigation links */}
+          <Box sx={{ display: "flex", justifyContent: "center", flexGrow: 1 }}>
+            <Button
+              LinkComponent={NavLink}
+              to="myHome"
+              sx={{
+                "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
                 m: 0.5,
                 borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
                 "&:hover": { backgroundColor: "#66cef773" },
-                color: "red",
               }}
               color="inherit"
             >
-              Sign Out
+              <HomeIcon sx={{ mr: 0.5 }} />
+              My Home
             </Button>
-          )}
+            <Button
+              LinkComponent={NavLink}
+              to="notes"
+              sx={{
+                "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
+                m: 0.5,
+                borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
+                "&:hover": { backgroundColor: "#66cef773" },
+              }}
+              color="inherit"
+            >
+              <EmailIcon sx={{ mr: 0.5 }} />
+              Notes
+            </Button>
+            <Button
+              LinkComponent={NavLink}
+              to="myTasks"
+              sx={{
+                "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
+                m: 0.5,
+                borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
+                "&:hover": { backgroundColor: "#66cef773" },
+              }}
+              color="inherit"
+            >
+              <AddTaskIcon sx={{ mr: 0.5 }} />
+              Tasks
+            </Button>
+            <Button
+              LinkComponent={NavLink}
+              to="events"
+              sx={{
+                "&.active": { backgroundColor: "#66cef773", fontWeight: 800 },
+                m: 0.5,
+                borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
+                "&:hover": { backgroundColor: "#66cef773" },
+              }}
+              color="inherit"
+            >
+              <EventIcon sx={{ mr: 0.5 }} />
+              Events
+            </Button>
+          </Box>
+
+          {/* Right side - Sign out button */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            {user && (
+              <Typography variant="h6" sx={{ mx: 2 }}>
+                {`${user.apartmentName}`}
+              </Typography>
+            )}
+            {user && (
+              <Button
+                onClick={handleSignOut}
+                sx={{
+                  m: 0.5,
+                  borderLeft: "rgba(192, 192, 192, 0.854) 2px solid",
+                  "&:hover": { backgroundColor: "#66cef773" },
+                  color: "red",
+                }}
+                color="inherit"
+              >
+                Sign Out
+              </Button>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
       <main>
