@@ -22,6 +22,7 @@ import {
 //layouts
 import BarLayout from "./layouts/BarLayout.js";
 import EventsPage from "./pages/EventsPage.js";
+import Note from "./components/Note.js";
 
 const myRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -34,6 +35,7 @@ const myRouter = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="chooseApartment" element={<ChooseApartment />} />
+      <Route path="createNote" element={<Note />} />
     </Route>
   )
 );

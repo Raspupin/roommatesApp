@@ -5,6 +5,7 @@ import Container from "@mui/material/Container";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import Note from "../components/Note";
 
 const NotesPage = () => {
   const [notes, setNotes] = useState([]); // State to hold notes data
@@ -34,6 +35,8 @@ const NotesPage = () => {
           {error}
         </Typography>
       )}
+
+      <Note />
 
       <List>
         {notes.map((note) => (

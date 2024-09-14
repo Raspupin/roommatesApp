@@ -258,6 +258,93 @@ app.post("/api/create-apartment", (req, res) => {
   );
 });
 
+//---------------------------Notes API-------------------------------------------
+// API route to create a new note
+app.post("/api/notes", authenticateToken, (req, res) => {
+  const { noteDesc } = req.body;
+  const { email, apartmentId } = req.user; // Extract email and apartmentId from the JWT token
+
+  if (!noteDesc || !email || !apartmentId) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+
+  const dateNotePosted = new Date()
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " "); // Current date in MySQL format
+
+  // Insert note into the database
+  const sqlInsertNote = `
+    INSERT INTO note (email, apartmentId, dateNotePosted, noteDesc)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(
+    sqlInsertNote,
+    [email, apartmentId, dateNotePosted, noteDesc],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting note into the database:", err);
+        return res.status(500).json({ message: "Server error." });
+      }
+      res.status(201).json({ message: "Note created successfully!" });
+    }
+  );
+});
+
+// API route to fetch notes for the current user's apartment
+app.get("/api/notes", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user; // Extract apartmentId from the JWT token
+
+  if (!apartmentId) {
+    return res.status(400).json({ message: "Missing apartment ID." });
+  }
+
+  const sqlFetchNotes = `
+    SELECT noteID, email, apartmentId, dateNotePosted, noteDesc
+    FROM note
+    WHERE apartmentId = ?
+    ORDER BY dateNotePosted DESC
+  `;
+
+  db.query(sqlFetchNotes, [apartmentId], (err, result) => {
+    if (err) {
+      console.error("Error fetching notes:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    res.json(result); // Return the fetched notes
+  });
+});
+
+// API route to delete a user's note
+app.delete("/api/notes/:noteID", authenticateToken, (req, res) => {
+  const { noteID } = req.params;
+  const { email } = req.user; // User's email from the JWT token
+
+  if (!noteID) {
+    return res.status(400).json({ message: "Missing note ID." });
+  }
+
+  const sqlDeleteNote = `
+    DELETE FROM note
+    WHERE noteID = ? AND email = ?
+  `;
+
+  db.query(sqlDeleteNote, [noteID, email], (err, result) => {
+    if (err) {
+      console.error("Error deleting note:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    if (result.affectedRows === 0) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized or note not found." });
+    }
+    res.status(200).json({ message: "Note deleted successfully." });
+  });
+});
+//---------------------------Notes API END-------------------------------------------
+
 // Start the server
 const PORT = 5000;
 app.listen(PORT, () => {
