@@ -80,6 +80,7 @@ app.post("/api/login", (req, res) => {
               id: user.id,
               email: user.email,
               firstName: user.fName,
+              lastName: user.lName,
               apartmentId: user.apartmentId,
               apartmentName: apartmentName, // Add apartmentName to token
             },
@@ -116,7 +117,7 @@ const authenticateToken = (req, res, next) => {
 
 // API request to retrieve user's first name, apartmentId, and apartmentName and username(primary key for user)
 app.get("/api/user", authenticateToken, (req, res) => {
-  const { firstName, apartmentId, email } = req.user; // Retrieve firstName and apartmentId from JWT payload
+  const { firstName, lastName, apartmentId, email } = req.user; // Retrieve firstName and apartmentId from JWT payload
 
   // Fetch the apartmentName using apartmentId from the 'apartment' table
   const sqlApartmentQuery =
@@ -135,7 +136,7 @@ app.get("/api/user", authenticateToken, (req, res) => {
     // Respond with the user's firstName, apartmentId, and apartmentName
     res.json({
       loggedIn: true,
-      user: { firstName, apartmentId, apartmentName, email },
+      user: { firstName, lastName, apartmentId, apartmentName, email },
     });
   });
 });

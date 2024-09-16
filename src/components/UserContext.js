@@ -24,6 +24,7 @@ export const UserProvider = ({ children }) => {
         // Set the user context with the decoded token information
         setUser({
           firstName: decodedToken.firstName,
+          lastName: decodedToken.lastName,
           email: decodedToken.email,
           apartmentId: decodedToken.apartmentId,
           apartmentName: decodedToken.apartmentName,

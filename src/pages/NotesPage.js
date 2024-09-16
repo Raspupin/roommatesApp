@@ -80,15 +80,28 @@ export default function NotesPage() {
         <Container maxWidth="md">
           <Note onNoteCreated={handleNewNote} />
         </Container>
-
         {/* Display notes */}
         <Box
           sx={{
             mt: 4,
             display: "flex",
             flexWrap: "wrap",
-            gap: 2,
+            gap: 6,
             justifyContent: "center",
+            p: 4, // Padding inside the board
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1625496235025-d783abf061c8?q=80&w=2040&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
+            backgroundSize: "auto", // Ensures the texture covers the entire area
+            backgroundPosition: "center", // Center the image
+            backgroundRepeat: "auto",
+            borderRadius: "12px", // Rounded corners for a more realistic board look
+
+            // Updated: Lighter wooden-like border
+            border: "12px solid #DEB887", // Lightened wood color (BurlyWood)
+
+            // Updated: More pronounced shadow for 3D effect
+            boxShadow:
+              "inset 0 0 10px rgba(0, 0, 0, 0.2), 5px 5px 15px rgba(0, 0, 0, 0.5)", // Stronger external shadow for depth
           }}
         >
           {notes.length > 0 ? (
