@@ -141,7 +141,7 @@ export default function BarLayout() {
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {user && (
               <Typography variant="h6" sx={{ mx: 2 }}>
-                {`${user.apartmentName}`}
+                {`${user.apartmentName}`}({`${user.apartmentId}`})
               </Typography>
             )}
             {user && (

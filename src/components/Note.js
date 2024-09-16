@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button, Box, Typography } from "@mui/material";
 import axios from "axios";
 
-export default function Note() {
-  // State to hold note description
+export default function Note({ onNoteCreated }) {
   const [noteDesc, setNoteDesc] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -18,7 +17,7 @@ export default function Note() {
     try {
       // Send the note data to the backend
       const response = await axios.post(
-        "http://localhost:5000/api/notes", // Your backend endpoint
+        "http://localhost:5000/api/notes",
         {
           noteDesc, // Send the note description entered by the user
         },
@@ -28,9 +27,12 @@ export default function Note() {
       );
 
       if (response.status === 201) {
-        // Clear the input and show success message
-        setNoteDesc("");
+        const newNote = response.data.note; // Get the newly created note from the backend response
+        setNoteDesc(""); // Clear the input field
         setSuccessMessage("Note posted successfully!");
+
+        // Call the onNoteCreated callback to update the notes list in the parent component
+        onNoteCreated(newNote);
       }
     } catch (error) {
       console.error("Error creating note:", error);

@@ -35,18 +35,6 @@ app.get("/", (req, res) => {
   res.send("Hello, the backend is connected to MySQL!");
 });
 
-// Example API route to get data from 'note' table
-app.get("/api/notes", (req, res) => {
-  const sqlQuery = "SELECT * FROM note";
-  db.query(sqlQuery, (err, result) => {
-    if (err) {
-      console.error("Error fetching notes:", err);
-      return res.status(500).send("Server error");
-    }
-    res.json(result);
-  });
-});
-
 // API route for user login
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
@@ -98,7 +86,6 @@ app.post("/api/login", (req, res) => {
             jwtSecret,
             { expiresIn: "1h" }
           );
-          console.log("User Info:", token); // Check if apartmentName is included
           // Send the token as a cookie
           res.cookie("token", token, {
             httpOnly: true,
@@ -127,9 +114,9 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// API request to retrieve user's first name, apartmentId, and apartmentName
+// API request to retrieve user's first name, apartmentId, and apartmentName and username(primary key for user)
 app.get("/api/user", authenticateToken, (req, res) => {
-  const { firstName, apartmentId } = req.user; // Retrieve firstName and apartmentId from JWT payload
+  const { firstName, apartmentId, email } = req.user; // Retrieve firstName and apartmentId from JWT payload
 
   // Fetch the apartmentName using apartmentId from the 'apartment' table
   const sqlApartmentQuery =
@@ -148,7 +135,7 @@ app.get("/api/user", authenticateToken, (req, res) => {
     // Respond with the user's firstName, apartmentId, and apartmentName
     res.json({
       loggedIn: true,
-      user: { firstName, apartmentId, apartmentName },
+      user: { firstName, apartmentId, apartmentName, email },
     });
   });
 });
@@ -273,7 +260,6 @@ app.post("/api/notes", authenticateToken, (req, res) => {
     .slice(0, 19)
     .replace("T", " "); // Current date in MySQL format
 
-  // Insert note into the database
   const sqlInsertNote = `
     INSERT INTO note (email, apartmentId, dateNotePosted, noteDesc)
     VALUES (?, ?, ?, ?)
@@ -287,7 +273,18 @@ app.post("/api/notes", authenticateToken, (req, res) => {
         console.error("Error inserting note into the database:", err);
         return res.status(500).json({ message: "Server error." });
       }
-      res.status(201).json({ message: "Note created successfully!" });
+
+      const newNote = {
+        noteID: result.insertId, // Get the newly created noteID
+        email,
+        apartmentId,
+        dateNotePosted,
+        noteDesc,
+      };
+
+      res
+        .status(201)
+        .json({ message: "Note created successfully!", note: newNote });
     }
   );
 });
