@@ -56,7 +56,14 @@ export default function BarLayout() {
   return (
     <div>
       <AppBar sx={{ zIndex: "1300" }} position="sticky">
-        <Toolbar>
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: 0,
+            position: "relative",
+          }}
+        >
           {/* Left side - Welcome message and apartment name */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton
@@ -78,7 +85,15 @@ export default function BarLayout() {
           </Box>
 
           {/* Center - Navigation links */}
-          <Box sx={{ display: "flex", justifyContent: "center", flexGrow: 1 }}>
+          <Box
+            sx={{
+              position: "absolute", // Fix the center box in the middle of the screen
+              left: "50%", // Move to 50% from the left
+              transform: "translateX(-50%)", // Translate it back to perfectly center
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Button
               LinkComponent={NavLink}
               to="myHome"
@@ -138,10 +153,16 @@ export default function BarLayout() {
           </Box>
 
           {/* Right side - Sign out button */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
             {user && (
               <Typography variant="h6" sx={{ mx: 2 }}>
-                {`${user.apartmentName}`}({`${user.apartmentId}`})
+                {`${user.apartmentName}`} ({`${user.apartmentId}`})
               </Typography>
             )}
             {user && (
