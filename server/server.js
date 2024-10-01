@@ -245,7 +245,263 @@ app.post("/api/create-apartment", (req, res) => {
     }
   );
 });
+//---------------------------Events API-------------------------------------------
+// API route to create a new event
+app.post("/api/events", authenticateToken, (req, res) => {
+  const { eventDesc, eventDate } = req.body;
+  const { email, apartmentId } = req.user; // Extract email and apartmentId from the JWT token
 
+  if (!eventDesc || !eventDate || !email || !apartmentId) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+
+  const postedDate = new Date().toISOString().slice(0, 19).replace("T", " "); // Current date in MySQL format
+
+  const sqlInsertEvent = `
+    INSERT INTO event (email, apartmentID, postedDate, eventDate, eventDesc)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    sqlInsertEvent,
+    [email, apartmentId, postedDate, eventDate, eventDesc],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting event into the database:", err);
+        return res.status(500).json({ message: "Server error." });
+      }
+
+      const newEvent = {
+        eventID: result.insertId, // Get the newly created eventID
+        email,
+        apartmentId,
+        postedDate,
+        eventDate,
+        eventDesc,
+      };
+
+      res
+        .status(201)
+        .json({ message: "Event created successfully!", event: newEvent });
+    }
+  );
+});
+
+// API route to fetch events for the current user's apartment
+app.get("/api/events", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user; // Extract apartmentId from the JWT token
+
+  if (!apartmentId) {
+    return res.status(400).json({ message: "Missing apartment ID." });
+  }
+
+  const sqlFetchEvents = `
+    SELECT eventID, email, apartmentID, postedDate, eventDate, eventDesc
+    FROM event
+    WHERE apartmentID = ?
+    ORDER BY eventDate DESC
+  `;
+
+  db.query(sqlFetchEvents, [apartmentId], (err, result) => {
+    if (err) {
+      console.error("Error fetching events:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    res.json(result); // Return the fetched events
+  });
+});
+
+// API route to delete a user's event
+app.delete("/api/events/:eventID", authenticateToken, (req, res) => {
+  const { eventID } = req.params;
+  const { email } = req.user; // User's email from the JWT token
+
+  if (!eventID) {
+    return res.status(400).json({ message: "Missing event ID." });
+  }
+
+  const sqlDeleteEvent = `
+    DELETE FROM event
+    WHERE eventID = ? AND email = ?
+  `;
+
+  db.query(sqlDeleteEvent, [eventID, email], (err, result) => {
+    if (err) {
+      console.error("Error deleting event:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    if (result.affectedRows === 0) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized or event not found." });
+    }
+    res.status(200).json({ message: "Event deleted successfully." });
+  });
+});
+
+//---------------------------HomePage API-------------------------------------------
+// API route to get roommate information (users in the same apartment)
+app.get("/api/home/roommates", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user;
+
+  const sqlFetchRoommates = `
+    SELECT email, fName, lName
+    FROM user
+    WHERE apartmentId = ?
+  `;
+
+  db.query(sqlFetchRoommates, [apartmentId], (err, result) => {
+    if (err) {
+      console.error("Error fetching roommates:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    res.json(result);
+  });
+});
+
+// API route to get today's daily tasks for the current user's apartment
+app.get("/api/home/tasks/today", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user;
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+  const sqlFetchDailyTasks = `
+    SELECT taskID, email, apartmentId, taskDesc, startDate, endDate, isWeekly
+    FROM task
+    WHERE apartmentId = ? AND isWeekly = 0 AND DATE(startDate) = ?
+  `;
+
+  db.query(sqlFetchDailyTasks, [apartmentId, today], (err, result) => {
+    if (err) {
+      console.error("Error fetching daily tasks:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    res.json(result);
+  });
+});
+// API route to fetch today's events for the current user's apartment
+app.get("/api/home/events/today", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user;
+  const today = new Date().toISOString().split("T")[0]; // Get only the date part
+
+  const sqlFetchTodayEvents = `
+    SELECT eventID, email, apartmentID, postedDate, eventDate, eventDesc
+    FROM event
+    WHERE apartmentID = ? AND DATE(eventDate) = ?
+    ORDER BY eventDate DESC
+  `;
+
+  db.query(sqlFetchTodayEvents, [apartmentId, today], (err, result) => {
+    if (err) {
+      console.error("Error fetching today's events:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    res.json(result);
+  });
+});
+// API route to fetch the last 3 notes for the current user's apartment
+app.get("/api/home/notes/latest", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user;
+
+  const sqlFetchLatestNotes = `
+    SELECT noteID, email, apartmentId, dateNotePosted, noteDesc
+    FROM note
+    WHERE apartmentId = ?
+    ORDER BY dateNotePosted DESC
+    LIMIT 3
+  `;
+
+  db.query(sqlFetchLatestNotes, [apartmentId], (err, result) => {
+    if (err) {
+      console.error("Error fetching latest notes:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    res.json(result);
+  });
+});
+//---------------------------Tasks API-------------------------------------------
+//post to server tasks
+app.post("/api/tasks", authenticateToken, (req, res) => {
+  const { taskDesc, isWeekly, startDate, endDate } = req.body;
+  const { email, apartmentId } = req.user;
+
+  const sqlInsertTask = `
+    INSERT INTO task (email, apartmentId, isWeekly, taskDesc, startDate, endDate, isCompleted)
+    VALUES (?, ?, ?, ?, ?, ?, 0)
+  `;
+
+  db.query(
+    sqlInsertTask,
+    [email, apartmentId, isWeekly, taskDesc, startDate, endDate],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting task:", err);
+        return res.status(500).json({ message: "Server error." });
+      }
+
+      const newTask = {
+        taskID: result.insertId,
+        email,
+        apartmentId,
+        isWeekly,
+        taskDesc,
+        startDate,
+        endDate,
+        isCompleted: false,
+      };
+
+      res
+        .status(201)
+        .json({ message: "Task created successfully!", task: newTask });
+    }
+  );
+});
+//fetch from server tasks
+app.get("/api/tasks", authenticateToken, (req, res) => {
+  const { apartmentId } = req.user;
+
+  const sqlFetchTasks = `
+    SELECT taskID, email, apartmentId, isCompleted, taskDesc, startDate, endDate, isWeekly
+    FROM task
+    WHERE apartmentId = ?
+    ORDER BY startDate DESC
+  `;
+
+  db.query(sqlFetchTasks, [apartmentId], (err, result) => {
+    if (err) {
+      console.error("Error fetching tasks:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+
+    res.json(result);
+  });
+});
+// API route to delete a user's task
+app.delete("/api/tasks/:taskID", authenticateToken, (req, res) => {
+  const { taskID } = req.params;
+  const { email } = req.user; // User's email from the JWT token
+
+  if (!taskID) {
+    return res.status(400).json({ message: "Missing task ID." });
+  }
+
+  const sqlDeleteTask = `
+    DELETE FROM task
+    WHERE taskID = ? AND email = ?
+  `;
+
+  db.query(sqlDeleteTask, [taskID, email], (err, result) => {
+    if (err) {
+      console.error("Error deleting task:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+    if (result.affectedRows === 0) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized or task not found." });
+    }
+    res.status(200).json({ message: "Task deleted successfully." });
+  });
+});
 //---------------------------Notes API-------------------------------------------
 // API route to create a new note
 app.post("/api/notes", authenticateToken, (req, res) => {
