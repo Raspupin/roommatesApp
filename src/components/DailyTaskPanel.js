@@ -7,9 +7,8 @@ const DailyTaskPanel = ({ tasks, user, handleDeleteTask }) => {
 
   // Filter tasks for the current date (daily tasks)
   const dailyTasks = tasks.filter(
-    (task) => !task.isWeekly && task.startDate === currentDate
+    (task) => !task.isWeekly && task.startDate.slice(0, 10) === currentDate
   );
-
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h5" gutterBottom>

@@ -426,7 +426,7 @@ app.post("/api/tasks", authenticateToken, (req, res) => {
 
   const sqlInsertTask = `
     INSERT INTO task (email, apartmentId, isWeekly, taskDesc, startDate, endDate, isCompleted)
-    VALUES (?, ?, ?, ?, ?, ?, 0)
+    VALUES (?, ?, ?, ?, DATE(?), DATE(?), 0)
   `;
 
   db.query(
@@ -444,8 +444,8 @@ app.post("/api/tasks", authenticateToken, (req, res) => {
         apartmentId,
         isWeekly,
         taskDesc,
-        startDate,
-        endDate,
+        startDate: startDate.slice(0, 10), // Ensure date format consistency
+        endDate: endDate.slice(0, 10),
         isCompleted: false,
       };
 
@@ -460,7 +460,9 @@ app.get("/api/tasks", authenticateToken, (req, res) => {
   const { apartmentId } = req.user;
 
   const sqlFetchTasks = `
-    SELECT taskID, email, apartmentId, isCompleted, taskDesc, startDate, endDate, isWeekly
+    SELECT taskID, email, apartmentId, isCompleted, taskDesc, 
+    DATE_FORMAT(startDate, '%Y-%m-%d') as startDate, 
+    DATE_FORMAT(endDate, '%Y-%m-%d') as endDate, isWeekly
     FROM task
     WHERE apartmentId = ?
     ORDER BY startDate DESC
