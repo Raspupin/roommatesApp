@@ -5,6 +5,7 @@ import EventList from "../components/EventList";
 import GoogleCalendar from "../components/GoogleCalendar";
 import axios from "axios";
 import { UserContext } from "../components/UserContext"; // Import UserContext to get the logged-in user
+import CompanyLogo from "../components/CompanyLogo";
 
 function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -50,13 +51,15 @@ function EventsPage() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Apartment Events
-        </Typography>
+        <CompanyLogo />
 
-        {/* Event scheduling form */}
-        <EventForm onEventCreated={handleNewEvent} />
-
+        <Box sx={{ textAlign: "center" }}>
+          <Typography variant="h4" gutterBottom>
+            Apartment Events
+          </Typography>
+          {/* Event scheduling form */}
+          <EventForm onEventCreated={handleNewEvent} />
+        </Box>
         {/* Display scheduled events */}
         <EventList
           events={events}
@@ -71,7 +74,7 @@ function EventsPage() {
           </Typography>
         )}
       </Box>
-      <GoogleCalendar />
+      {/* <GoogleCalendar /> */}
     </Container>
   );
 }

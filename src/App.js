@@ -1,17 +1,22 @@
 import React from "react";
 import { Container } from "@mui/material";
-import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
 import "./styles/globalStyles.css";
+import { UserProvider } from "./components/UserContext"; // Import UserProvider
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+
+// Import Pages
+import Home from "./pages/Home";
 import NotesPage from "./pages/NotesPage";
-import MyHome from "./pages/MyHome.js";
-import TasksPage from "./pages/TasksPage.js";
-import Login from "./pages/Login.js";
-import Register from "./pages/Register.js";
-import ChooseApartment from "./pages/ChooseApartment.js";
-import { UserProvider } from "./components/UserContext.js";
-//router
+import MyHome from "./pages/MyHome";
+import TasksPage from "./pages/TasksPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ChooseApartment from "./pages/ChooseApartment";
+import EventsPage from "./pages/EventsPage";
+import Note from "./components/Note";
+
+// Import Router
 import {
   Route,
   createBrowserRouter,
@@ -19,23 +24,66 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-//layouts
-import BarLayout from "./layouts/BarLayout.js";
-import EventsPage from "./pages/EventsPage.js";
-import Note from "./components/Note.js";
+// Import Layout
+import BarLayout from "./layouts/BarLayout";
 
 const myRouter = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<BarLayout />}>
-      <Route index element={<Home />} />
-      <Route path="notes" element={<NotesPage />} />
-      <Route path="myHome" element={<MyHome />} />
-      <Route path="events" element={<EventsPage />} />
-      <Route path="myTasks" element={<TasksPage />} />
+      {/* Public Routes */}
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="chooseApartment" element={<ChooseApartment />} />
-      <Route path="createNote" element={<Note />} />
+
+      {/* Protected Routes */}
+      <Route
+        index
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="notes"
+        element={
+          <ProtectedRoute>
+            <NotesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="myHome"
+        element={
+          <ProtectedRoute>
+            <MyHome />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="events"
+        element={
+          <ProtectedRoute>
+            <EventsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="myTasks"
+        element={
+          <ProtectedRoute>
+            <TasksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="createNote"
+        element={
+          <ProtectedRoute>
+            <Note />
+          </ProtectedRoute>
+        }
+      />
     </Route>
   )
 );

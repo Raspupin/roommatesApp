@@ -2,11 +2,25 @@ import React from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import EventIcon from "@mui/icons-material/Event";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTheme } from "@mui/material/styles";
 
 const EventList = ({ events, user, handleDeleteEvent }) => {
+  const theme = useTheme(); // Access the MUI theme
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" gutterBottom>
+    <Box
+      sx={{
+        mt: 4,
+      }}
+    >
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{
+          textAlign: "center",
+          justifyContent: "center", // Center the text horizontally
+          alignItems: "center", // Vertically center the text
+        }}
+      >
         Scheduled Events
       </Typography>
 
@@ -19,7 +33,8 @@ const EventList = ({ events, user, handleDeleteEvent }) => {
               p: 2,
               border: "1px solid rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
-              backgroundColor: "#f1f8e9",
+              backgroundColor: theme.palette.secondary.main, // Use theme color for task background
+              color: theme.palette.secondary.contrastText, // Ensure text contrasts with background
               boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.1)",
               display: "flex",
               justifyContent: "space-between", // Align content with space between

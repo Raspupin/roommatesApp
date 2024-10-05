@@ -9,6 +9,7 @@ import {
   Grid,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles"; // Import MUI theme hook
+import CompanyLogo from "../components/CompanyLogo";
 
 function MyHome() {
   const [roommates, setRoommates] = useState([]);
@@ -62,10 +63,12 @@ function MyHome() {
           boxShadow: "10px 10px 30px rgba(0, 0, 0, 0.3)", // Stronger shadow for 3D effect
         }}
       >
-        <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-          My Home Overview
-        </Typography>
-
+        <Container sx={{ textAlign: "center" }}>
+          <CompanyLogo />
+          <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
+            My Home Overview
+          </Typography>
+        </Container>
         {/* Grid Layout to organize sections */}
         <Grid container spacing={3}>
           {/* Roommates Section */}

@@ -5,6 +5,7 @@ import DailyTaskPanel from "../components/DailyTaskPanel";
 import WeeklyTaskPanel from "../components/WeeklyTaskPanel";
 import axios from "axios";
 import { UserContext } from "../components/UserContext";
+import CompanyLogo from "../components/CompanyLogo";
 
 function TasksPage() {
   const [tasks, setTasks] = useState([]);
@@ -49,13 +50,16 @@ function TasksPage() {
 
   return (
     <Container maxWidth="lg">
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, textAlign: "center" }}>
+        <CompanyLogo />
         <Typography variant="h4" gutterBottom>
           Apartment Tasks
         </Typography>
 
-        {/* Task creation form */}
-        <CreateTask onTaskCreated={handleNewTask} />
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          {/* Task creation form */}
+          <CreateTask onTaskCreated={handleNewTask} />
+        </Box>
 
         {/* Display daily tasks */}
         <DailyTaskPanel

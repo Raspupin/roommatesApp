@@ -73,7 +73,7 @@ const RealisticNote = ({ note, user, handleDeleteNote }) => {
           color="text.secondary"
           sx={{ mt: 2, fontStyle: "italic" }}
         >
-          Posted by {user.firstName} {user.lastName} on{" "}
+          Posted by {note.email} on{" "}
           {new Date(note.dateNotePosted).toLocaleString()}
         </Typography>
       </Box>
